@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deploy Catalog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="brand">
+        <span class="brand-mark">◎</span>
+        <div>
+          <p class="eyebrow">Coolify · genver / teamver</p>
+          <h1>Deploy Catalog</h1>
+        </div>
+      </div>
+      <p class="lede">배포된 프로젝트와 URL을 한곳에서 찾습니다.</p>
+      <div class="toolbar">
+        <label class="search">
+          <span class="sr-only">검색</span>
+          <input id="q" type="search" placeholder="이름, URL, 설명, 프로젝트 검색…" autocomplete="off" />
+        </label>
+        <select id="projectFilter" aria-label="프로젝트 필터">
+          <option value="">전체 프로젝트</option>
+        </select>
+        <button id="refreshBtn" type="button" class="btn">새로고침</button>
+      </div>
+      <div class="meta" id="meta"></div>
+    </header>
+
+    <main>
+      <div id="error" class="banner error hidden"></div>
+      <div id="list" class="list"></div>
+      <div id="empty" class="empty hidden">검색 결과가 없습니다.</div>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

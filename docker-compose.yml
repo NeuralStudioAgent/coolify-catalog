@@ -1,0 +1,30 @@
+services:
+  coolify-catalog:
+    build: .
+    image: coolify-catalog:latest
+    container_name: coolify-catalog
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+      - DB_HOST=coolify-db
+      - DB_PORT=5432
+      - DB_DATABASE=coolify
+    networks:
+      - coolify
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=coolify
+      - "traefik.http.routers.coolify-catalog.rule=Host(`coolify.app.genver.online`)"
+      - traefik.http.routers.coolify-catalog.entrypoints=https
+      - traefik.http.routers.coolify-catalog.tls=true
+      - traefik.http.routers.coolify-catalog.tls.certresolver=letsencrypt
+      - traefik.http.services.coolify-catalog.loadbalancer.server.port=3000
+      - "traefik.http.routers.coolify-catalog-http.rule=Host(`coolify.app.genver.online`)"
+      - traefik.http.routers.coolify-catalog-http.entrypoints=http
+      - traefik.http.routers.coolify-catalog-http.middlewares=coolify-catalog-redirect
+      - traefik.http.middlewares.coolify-catalog-redirect.redirectscheme.scheme=https
+networks:
+  coolify:
+    external: true

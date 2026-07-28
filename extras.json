@@ -1,0 +1,42 @@
+[
+  {
+    "name": "pmnt",
+    "urls": ["https://pmnt.app.genver.online"],
+    "description": "프로젝트 관리 보드 (태스크/아카이브, JSON 저장)",
+    "project": "manual",
+    "status": "running",
+    "git": null,
+    "branch": null,
+    "source": "manual"
+  },
+  {
+    "name": "greenai-proto / catai",
+    "urls": ["https://greenai-proto.app.genver.online"],
+    "description": "Green AI / CAT.AI 프로토타입 (수동 배포)",
+    "project": "manual",
+    "status": "running",
+    "git": null,
+    "branch": null,
+    "source": "manual"
+  },
+  {
+    "name": "onpremise-promo",
+    "urls": ["https://onpremise.app.teamver.online"],
+    "description": "온프레미스 프로모 페이지 (수동 배포)",
+    "project": "manual",
+    "status": "running",
+    "git": null,
+    "branch": null,
+    "source": "manual"
+  },
+  {
+    "name": "Coolify Admin",
+    "urls": ["https://coolify.teamver.online"],
+    "description": "Coolify 관리 UI",
+    "project": "infra",
+    "status": "running",
+    "git": null,
+    "branch": null,
+    "source": "manual"
+  }
+]
