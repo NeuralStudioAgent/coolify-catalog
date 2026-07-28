@@ -1,6 +1,7 @@
 [
   {
     "key": "nti-demo",
+    "kind": "mockup",
     "matchNames": ["nti-demo"],
     "matchHosts": ["nti-demo.app.genver.online"],
     "urls": ["https://nti-demo.app.genver.online"],
@@ -15,6 +16,7 @@
   },
   {
     "key": "farm-support",
+    "kind": "mockup",
     "matchNames": ["farm-support"],
     "matchHosts": ["farm-support.app.teamver.online"],
     "urls": ["https://farm-support.app.teamver.online"],
@@ -29,6 +31,7 @@
   },
   {
     "key": "open-inno",
+    "kind": "mockup",
     "matchNames": ["open-inno"],
     "matchHosts": ["open-inno.app.teamver.online"],
     "urls": ["https://open-inno.app.teamver.online"],
@@ -43,6 +46,7 @@
   },
   {
     "key": "open-inno-catai",
+    "kind": "mockup",
     "matchNames": ["open-inno-catai"],
     "matchHosts": ["open-inno-catai.app.teamver.online"],
     "urls": ["https://open-inno-catai.app.teamver.online"],
@@ -57,6 +61,7 @@
   },
   {
     "key": "greenai-proto",
+    "kind": "proto",
     "matchNames": ["greenai-proto / catai", "greenai-proto", "nt-greenai-catai"],
     "matchHosts": ["greenai-proto.app.genver.online"],
     "urls": ["https://greenai-proto.app.genver.online"],
@@ -71,6 +76,7 @@
   },
   {
     "key": "pmnt",
+    "kind": null,
     "matchNames": ["pmnt"],
     "matchHosts": ["pmnt.app.genver.online"],
     "urls": ["https://pmnt.app.genver.online"],

@@ -226,6 +226,7 @@ async function loadAll(force = false) {
     const live = liveByKey.get(def.key);
     return {
       key: def.key,
+      kind: def.kind || null, // mockup | proto | null
       title: def.title || { jp: def.key, kr: def.key },
       description: def.description || { jp: "", kr: "" },
       urls: (live?.urls?.length ? live.urls : def.urls) || [],
