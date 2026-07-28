@@ -18,15 +18,5 @@
     "git": null,
     "branch": null,
     "source": "manual"
-  },
-  {
-    "name": "Next-Tomorrow Demo List",
-    "urls": ["https://nt-demos.app.genver.online"],
-    "description": "Next-Tomorrow(NT) 전용 데모 목록 (JP/KR)",
-    "project": "nt",
-    "status": "running",
-    "git": null,
-    "branch": null,
-    "source": "manual"
   }
 ]
