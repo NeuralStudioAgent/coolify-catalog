@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Next-Tomorrow Demo List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/nt/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <aside class="side">
+      <div class="brand">
+        <div class="brand-mark">NT</div>
+        <div>
+          <div class="brand-title">Next-Tomorrow</div>
+          <div class="brand-sub" id="brandSub"></div>
+        </div>
+      </div>
+      <div class="side-section">
+        <div class="side-label" id="langLabel"></div>
+        <div class="seg" id="langSeg">
+          <button type="button" data-val="jp" class="active">JP</button>
+          <button type="button" data-val="kr">KR</button>
+        </div>
+      </div>
+      <p class="side-footer" id="sideFooter"></p>
+    </aside>
+
+    <main class="main">
+      <header class="hero">
+        <h1 id="appTitle">Next-Tomorrow Demo List</h1>
+        <p id="appDesc"></p>
+        <div class="meta" id="meta"></div>
+      </header>
+      <div id="error" class="banner error hidden"></div>
+      <div id="list" class="list"></div>
+    </main>
+  </div>
+  <script src="/nt/app.js"></script>
+</body>
+</html>

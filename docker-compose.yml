@@ -16,15 +16,27 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=coolify
+      - traefik.http.services.coolify-catalog.loadbalancer.server.port=3000
+      # Main Coolify catalog
       - "traefik.http.routers.coolify-catalog.rule=Host(`coolify.app.genver.online`)"
       - traefik.http.routers.coolify-catalog.entrypoints=https
       - traefik.http.routers.coolify-catalog.tls=true
       - traefik.http.routers.coolify-catalog.tls.certresolver=letsencrypt
-      - traefik.http.services.coolify-catalog.loadbalancer.server.port=3000
+      - traefik.http.routers.coolify-catalog.service=coolify-catalog
       - "traefik.http.routers.coolify-catalog-http.rule=Host(`coolify.app.genver.online`)"
       - traefik.http.routers.coolify-catalog-http.entrypoints=http
       - traefik.http.routers.coolify-catalog-http.middlewares=coolify-catalog-redirect
       - traefik.http.middlewares.coolify-catalog-redirect.redirectscheme.scheme=https
+      # Next-Tomorrow Demo List
+      - "traefik.http.routers.nt-demos.rule=Host(`nt-demos.app.genver.online`)"
+      - traefik.http.routers.nt-demos.entrypoints=https
+      - traefik.http.routers.nt-demos.tls=true
+      - traefik.http.routers.nt-demos.tls.certresolver=letsencrypt
+      - traefik.http.routers.nt-demos.service=coolify-catalog
+      - "traefik.http.routers.nt-demos-http.rule=Host(`nt-demos.app.genver.online`)"
+      - traefik.http.routers.nt-demos-http.entrypoints=http
+      - traefik.http.routers.nt-demos-http.middlewares=nt-demos-redirect
+      - traefik.http.middlewares.nt-demos-redirect.redirectscheme.scheme=https
 networks:
   coolify:
     external: true
