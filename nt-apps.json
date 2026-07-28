@@ -14,6 +14,20 @@
     }
   },
   {
+    "key": "farm-support",
+    "matchNames": ["farm-support"],
+    "matchHosts": ["farm-support.app.teamver.online"],
+    "urls": ["https://farm-support.app.teamver.online"],
+    "title": {
+      "jp": "Farm Support",
+      "kr": "Farm Support"
+    },
+    "description": {
+      "jp": "農業支援デモ",
+      "kr": "농업 지원 데모"
+    }
+  },
+  {
     "key": "open-inno",
     "matchNames": ["open-inno"],
     "matchHosts": ["open-inno.app.teamver.online"],
