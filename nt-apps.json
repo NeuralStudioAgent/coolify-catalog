@@ -75,6 +75,21 @@
     }
   },
   {
+    "key": "greenai-rag",
+    "kind": "proto",
+    "matchNames": ["greenai-rag"],
+    "matchHosts": ["rag.demo.next-tomorrow.online"],
+    "urls": ["https://rag.demo.next-tomorrow.online"],
+    "title": {
+      "jp": "Green AI RAG",
+      "kr": "Green AI RAG"
+    },
+    "description": {
+      "jp": "自社RAG。J-Credit方法論・案件資料を出典付きで回答（CAT.AI非依存）",
+      "kr": "자체 RAG. J-Credit 방법론·프로젝트 자료를 출처와 함께 답변 (CAT.AI 비의존)"
+    }
+  },
+  {
     "key": "pmnt",
     "kind": null,
     "matchNames": ["pmnt"],

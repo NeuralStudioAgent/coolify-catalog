@@ -12,6 +12,8 @@ services:
       - DB_PORT=5432
       - DB_DATABASE=coolify
       - DATA_DIR=/app/data
+      # First host is canonical; the rest are kept for old links.
+      - NT_HOSTS=demo.app.next-tomorrow.online
     volumes:
       # Demo sets must outlive image rebuilds
       - ./data:/app/data
@@ -44,16 +46,29 @@ services:
       - 'traefik.http.middlewares.catalog-legacy-redirect.redirectregex.regex=^https?://coolify\.app\.genver\.online/(.*)'
       - 'traefik.http.middlewares.catalog-legacy-redirect.redirectregex.replacement=https://demo.app.genver.online/$${1}'
       - traefik.http.middlewares.catalog-legacy-redirect.redirectregex.permanent=true
-      # Next-Tomorrow Demo List
-      - "traefik.http.routers.nt-demos.rule=Host(`nt-demos.app.genver.online`)"
+      # Next-Tomorrow Demo List — on the company's own domain
+      - "traefik.http.routers.nt-demos.rule=Host(`demo.app.next-tomorrow.online`)"
       - traefik.http.routers.nt-demos.entrypoints=https
       - traefik.http.routers.nt-demos.tls=true
       - traefik.http.routers.nt-demos.tls.certresolver=letsencrypt
       - traefik.http.routers.nt-demos.service=coolify-catalog
-      - "traefik.http.routers.nt-demos-http.rule=Host(`nt-demos.app.genver.online`)"
+      - "traefik.http.routers.nt-demos-http.rule=Host(`demo.app.next-tomorrow.online`)"
       - traefik.http.routers.nt-demos-http.entrypoints=http
       - traefik.http.routers.nt-demos-http.middlewares=nt-demos-redirect
       - traefik.http.middlewares.nt-demos-redirect.redirectscheme.scheme=https
+      # Former NT hostname: keep old links working
+      - 'traefik.http.routers.nt-legacy.rule=Host(`nt-demos.app.genver.online`)'
+      - traefik.http.routers.nt-legacy.entrypoints=https
+      - traefik.http.routers.nt-legacy.tls=true
+      - traefik.http.routers.nt-legacy.tls.certresolver=letsencrypt
+      - traefik.http.routers.nt-legacy.service=coolify-catalog
+      - traefik.http.routers.nt-legacy.middlewares=nt-legacy-redirect
+      - 'traefik.http.routers.nt-legacy-http.rule=Host(`nt-demos.app.genver.online`)'
+      - traefik.http.routers.nt-legacy-http.entrypoints=http
+      - traefik.http.routers.nt-legacy-http.middlewares=nt-legacy-redirect
+      - 'traefik.http.middlewares.nt-legacy-redirect.redirectregex.regex=^https?://nt-demos\.app\.genver\.online/(.*)'
+      - 'traefik.http.middlewares.nt-legacy-redirect.redirectregex.replacement=https://demo.app.next-tomorrow.online/$${1}'
+      - traefik.http.middlewares.nt-legacy-redirect.redirectregex.permanent=true
 networks:
   coolify:
     external: true

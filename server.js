@@ -15,7 +15,14 @@ const PORT = Number(process.env.PORT || 3000);
 const PUBLIC = path.join(__dirname, "public");
 const EXTRAS_PATH = path.join(__dirname, "extras.json");
 const NT_APPS_PATH = path.join(__dirname, "nt-apps.json");
-const NT_HOST = (process.env.NT_HOST || "nt-demos.app.genver.online").toLowerCase();
+// Comma-separated so the NT list can change domain without a code change. The
+// first entry is canonical; the rest stay served for old links.
+const NT_HOSTS = new Set(
+  (process.env.NT_HOSTS || process.env.NT_HOST || "demo.app.next-tomorrow.online")
+    .split(",")
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean)
+);
 
 // Demo sets are the only mutable state here, so they live on a mounted volume
 // rather than in the image, which is rebuilt on every deploy.
@@ -117,12 +124,22 @@ function loadExtras() {
   }));
 }
 
-function matchesNtDef(app, def) {
+/* How strongly a def claims an app: host beats exact name beats substring.
+   Substring alone is ambiguous — "open-inno" is contained in "open-inno-catai"
+   — so a weak hit must never outrank the def that names the app exactly. */
+function ntMatchScore(app, def) {
+  const hosts = new Set((def.matchHosts || []).map((h) => String(h).toLowerCase()));
+  if ((app.urls || []).some((u) => hosts.has(hostOf(u)))) return 3;
+
   const name = String(app.name || "").toLowerCase();
   const names = (def.matchNames || []).map((n) => String(n).toLowerCase());
-  if (names.some((n) => name === n || name.includes(n))) return true;
-  const hosts = new Set((def.matchHosts || []).map((h) => String(h).toLowerCase()));
-  return (app.urls || []).some((u) => hosts.has(hostOf(u)));
+  if (names.some((n) => name === n)) return 2;
+  if (names.some((n) => n && name.includes(n))) return 1;
+  return 0;
+}
+
+function matchesNtDef(app, def) {
+  return ntMatchScore(app, def) > 0;
 }
 
 function isNtApp(app, defs = loadNtDefs()) {
@@ -223,15 +240,21 @@ async function loadAll(force = false) {
   });
 
   const mainApps = merged.filter((a) => !isNtApp(a, ntDefs));
+
+  // Keep only the best-scoring app per def, so a substring collision cannot
+  // overwrite the app a def names outright.
   const liveByKey = new Map();
   for (const app of merged) {
     for (const def of ntDefs) {
-      if (matchesNtDef(app, def)) liveByKey.set(def.key, app);
+      const score = ntMatchScore(app, def);
+      if (!score) continue;
+      const held = liveByKey.get(def.key);
+      if (!held || score > held.score) liveByKey.set(def.key, { app, score });
     }
   }
 
   const ntApps = ntDefs.map((def) => {
-    const live = liveByKey.get(def.key);
+    const live = liveByKey.get(def.key)?.app;
     return {
       key: def.key,
       kind: def.kind || null, // mockup | proto | null
@@ -392,7 +415,13 @@ function isNtHost(req) {
   const host = String(req.headers.host || "")
     .split(":")[0]
     .toLowerCase();
-  return host === NT_HOST || host.startsWith("nt-demos.");
+  // Everything under next-tomorrow.online is NT business by policy, so the list
+  // answers there even on a host nobody remembered to add to NT_HOSTS.
+  return (
+    NT_HOSTS.has(host) ||
+    host === "next-tomorrow.online" ||
+    host.endsWith(".next-tomorrow.online")
+  );
 }
 
 const server = http.createServer(async (req, res) => {

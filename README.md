@@ -4,7 +4,7 @@ Coolify에 배포된 앱 이름·URL·설명을 한 페이지에서 검색합니
 
 - 일반 목록: https://demo.app.genver.online/ (구 `coolify.app.genver.online` → 301)
 - 데모 세트: https://demo.app.genver.online/sets
-- Next-Tomorrow Demo List: https://nt-demos.app.genver.online/ (JP 기본 / KR 토글)
+- Next-Tomorrow Demo List: https://demo.app.next-tomorrow.online/ (JP 기본 / KR 토글, 구 `nt-demos.app.genver.online` → 301)
 
 ## 데모 세트
 
