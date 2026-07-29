@@ -11,6 +11,10 @@ services:
       - DB_HOST=coolify-db
       - DB_PORT=5432
       - DB_DATABASE=coolify
+      - DATA_DIR=/app/data
+    volumes:
+      # Demo sets must outlive image rebuilds
+      - ./data:/app/data
     networks:
       - coolify
     labels:
@@ -18,15 +22,28 @@ services:
       - traefik.docker.network=coolify
       - traefik.http.services.coolify-catalog.loadbalancer.server.port=3000
       # Main Coolify catalog
-      - "traefik.http.routers.coolify-catalog.rule=Host(`coolify.app.genver.online`)"
+      - "traefik.http.routers.coolify-catalog.rule=Host(`demo.app.genver.online`)"
       - traefik.http.routers.coolify-catalog.entrypoints=https
       - traefik.http.routers.coolify-catalog.tls=true
       - traefik.http.routers.coolify-catalog.tls.certresolver=letsencrypt
       - traefik.http.routers.coolify-catalog.service=coolify-catalog
-      - "traefik.http.routers.coolify-catalog-http.rule=Host(`coolify.app.genver.online`)"
+      - "traefik.http.routers.coolify-catalog-http.rule=Host(`demo.app.genver.online`)"
       - traefik.http.routers.coolify-catalog-http.entrypoints=http
       - traefik.http.routers.coolify-catalog-http.middlewares=coolify-catalog-redirect
       - traefik.http.middlewares.coolify-catalog-redirect.redirectscheme.scheme=https
+      # Former hostname: keep old links working, send them to demo.app
+      - 'traefik.http.routers.catalog-legacy.rule=Host(`coolify.app.genver.online`)'
+      - traefik.http.routers.catalog-legacy.entrypoints=https
+      - traefik.http.routers.catalog-legacy.tls=true
+      - traefik.http.routers.catalog-legacy.tls.certresolver=letsencrypt
+      - traefik.http.routers.catalog-legacy.service=coolify-catalog
+      - traefik.http.routers.catalog-legacy.middlewares=catalog-legacy-redirect
+      - 'traefik.http.routers.catalog-legacy-http.rule=Host(`coolify.app.genver.online`)'
+      - traefik.http.routers.catalog-legacy-http.entrypoints=http
+      - traefik.http.routers.catalog-legacy-http.middlewares=catalog-legacy-redirect
+      - 'traefik.http.middlewares.catalog-legacy-redirect.redirectregex.regex=^https?://coolify\.app\.genver\.online/(.*)'
+      - 'traefik.http.middlewares.catalog-legacy-redirect.redirectregex.replacement=https://demo.app.genver.online/$${1}'
+      - traefik.http.middlewares.catalog-legacy-redirect.redirectregex.permanent=true
       # Next-Tomorrow Demo List
       - "traefik.http.routers.nt-demos.rule=Host(`nt-demos.app.genver.online`)"
       - traefik.http.routers.nt-demos.entrypoints=https

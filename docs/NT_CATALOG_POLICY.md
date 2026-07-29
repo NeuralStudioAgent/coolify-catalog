@@ -9,7 +9,7 @@
 
 | 목록 | URL | 대상 |
 |------|-----|------|
-| **일반 Deploy Catalog** | https://coolify.app.genver.online/ | teamver / genver 등 일반·데모 배포 |
+| **일반 Deploy Catalog** | https://demo.app.genver.online/ | teamver / genver 등 일반·데모 배포 |
 | **Next-Tomorrow Demo List** | https://nt-demos.app.genver.online/ | NT(next-tomorrow) 고객/회사용 데모만 |
 
 - NT 항목은 **일반 목록에 표시하지 않는다.**
@@ -79,7 +79,7 @@ NT 목록에서는 데모 성격을 구분해서 표시한다.
 5. 배포: `/opt/coolify-catalog` 동기화 후 `docker compose up -d --build`.
 6. 확인:
    - NT: https://nt-demos.app.genver.online/ 에 보이는지
-   - 일반: https://coolify.app.genver.online/ 에 **안** 보이는지
+   - 일반: https://demo.app.genver.online/ 에 **안** 보이는지
 
 ### 5.2 일반(비 NT) 앱인 경우
 
@@ -103,7 +103,7 @@ NT 목록에서는 데모 성격을 구분해서 표시한다.
 | `server.js` | Coolify DB 조회, NT 필터, `/api/apps` · `/api/nt-apps` |
 | `public/` | 일반 카탈로그 UI |
 | `public/nt/` | NT Demo List UI (JP/KR) |
-| `docker-compose.yml` | Host: `coolify.app.genver.online`, `nt-demos.app.genver.online` |
+| `docker-compose.yml` | Host: `demo.app.genver.online`, `nt-demos.app.genver.online` (구 `coolify.app` → 301) |
 
 서버 경로: `/opt/coolify-catalog`  
 저장소: https://github.com/NeuralStudioAgent/coolify-catalog
@@ -135,3 +135,5 @@ NT 목록에서는 데모 성격을 구분해서 표시한다.
 | 날짜 | 내용 |
 |------|------|
 | 2026-07-28 | 정책 문서 최초 작성. NT 6종 분리, mockup/proto 구분 도입 |
+| 2026-07-29 | 일반 카탈로그 도메인을 `demo.app.genver.online`으로 이전 (구 주소는 301) |
+| 2026-07-29 | 데모 세트 기능 추가. NT 데모는 세트에 담지 않는다 (§1 분리 원칙 유지) |
