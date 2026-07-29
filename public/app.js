@@ -1,6 +1,10 @@
 const $ = (sel) => document.querySelector(sel);
 
 let catalog = { apps: [], projects: [] };
+let picking = false;
+let requiresKey = false;
+/** app id -> { id, name, url } while building a set. */
+const picked = new Map();
 
 function statusClass(s) {
   return ["healthy", "running", "stopped", "degraded"].includes(s) ? s : "unknown";
@@ -63,7 +67,23 @@ function renderList() {
 
   apps.forEach((app) => {
     const card = document.createElement("article");
-    card.className = "card";
+    card.className = "card" + (picking ? " pickable" : "") + (picked.has(app.id) ? " picked" : "");
+
+    if (picking) {
+      const box = document.createElement("input");
+      box.type = "checkbox";
+      box.className = "pick";
+      box.checked = picked.has(app.id);
+      box.setAttribute("aria-label", `${app.name} 선택`);
+      box.addEventListener("change", () => togglePick(app, box.checked));
+      card.appendChild(box);
+      // Clicking anywhere on the card toggles it, except on the real links.
+      card.addEventListener("click", (e) => {
+        if (e.target.closest("a") || e.target === box) return;
+        box.checked = !box.checked;
+        togglePick(app, box.checked);
+      });
+    }
 
     const main = document.createElement("div");
     const top = document.createElement("div");
@@ -163,8 +183,97 @@ async function load(force = false) {
   }
 }
 
+/* ---------- Picking demos for a set -------------------------------------- */
+
+function togglePick(app, on) {
+  if (on) picked.set(app.id, { id: app.id, name: app.name, url: app.urls?.[0] || "" });
+  else picked.delete(app.id);
+  renderTray();
+  renderList();
+}
+
+function renderTray() {
+  const n = picked.size;
+  $("#tray").classList.toggle("hidden", !picking);
+  $("#trayCount").textContent = String(n);
+  const names = [...picked.values()].map((p) => p.name);
+  $("#trayNames").textContent = names.slice(0, 4).join(" · ") + (n > 4 ? ` 외 ${n - 4}개` : "");
+  $("#traySave").disabled = n === 0;
+}
+
+function setPicking(on) {
+  picking = on;
+  $("#pickBtn").textContent = on ? "고르기 중단" : "데모 고르기";
+  document.body.classList.toggle("picking", on);
+  if (!on) picked.clear();
+  renderTray();
+  renderList();
+}
+
+async function saveSet() {
+  const title = $("#setTitle").value.trim();
+  const key = $("#setKey").value;
+  const err = $("#saveErr");
+  err.classList.add("hidden");
+  if (!title || (requiresKey && !key)) {
+    err.textContent = requiresKey
+      ? "세트 이름과 편집 비밀번호를 입력해 주세요."
+      : "세트 이름을 입력해 주세요.";
+    err.classList.remove("hidden");
+    return;
+  }
+  try {
+    const r = await fetch("/api/sets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Edit-Key": key },
+      body: JSON.stringify({
+        title,
+        subtitle: $("#setSubtitle").value.trim(),
+        slug: $("#setSlug").value.trim(),
+        items: [...picked.values()],
+      }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+    sessionStorage.setItem("catalogEditKey", key);
+    location.href = `/show/${data.slug}`;
+  } catch (e) {
+    err.textContent = String(e.message || e);
+    err.classList.remove("hidden");
+  }
+}
+
 $("#q").addEventListener("input", renderList);
 $("#projectFilter").addEventListener("change", renderList);
 $("#refreshBtn").addEventListener("click", () => load(true));
+$("#pickBtn").addEventListener("click", () => setPicking(!picking));
+$("#trayExit").addEventListener("click", () => setPicking(false));
+$("#trayClear").addEventListener("click", () => {
+  picked.clear();
+  renderTray();
+  renderList();
+});
+$("#traySave").addEventListener("click", () => {
+  $("#setKey").value = sessionStorage.getItem("catalogEditKey") || "";
+  $("#saveErr").classList.add("hidden");
+  $("#saveDlg").showModal();
+  $("#setTitle").focus();
+});
+$("#saveCancel").addEventListener("click", () => $("#saveDlg").close());
+$("#saveGo").addEventListener("click", saveSet);
+$("#saveForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  saveSet();
+});
 
-load();
+fetch("/api/health", { cache: "no-store" })
+  .then((r) => r.json())
+  .then((h) => {
+    requiresKey = Boolean(h.requiresKey);
+    $("#setKeyField").classList.toggle("hidden", !requiresKey);
+  })
+  .catch(() => {});
+
+load().then(() => {
+  if (new URLSearchParams(location.search).get("pick") === "1") setPicking(true);
+});

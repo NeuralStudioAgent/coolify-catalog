@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>데모</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/show/styles.css" />
+</head>
+<body>
+  <div class="stage">
+    <header class="stage-head">
+      <p class="eyebrow" id="subtitle"></p>
+      <h1 id="title">불러오는 중…</h1>
+    </header>
+
+    <div id="error" class="banner error hidden"></div>
+    <div id="grid" class="grid"></div>
+
+    <footer class="stage-foot">
+      <span id="foot"></span>
+      <a href="/sets" class="foot-link">세트 목록</a>
+    </footer>
+  </div>
+  <script src="/show/app.js"></script>
+</body>
+</html>

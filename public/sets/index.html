@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>데모 세트 · Deploy Catalog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="brand">
+        <span class="brand-mark">◎</span>
+        <div>
+          <p class="eyebrow">Coolify · genver / teamver</p>
+          <h1>데모 세트</h1>
+        </div>
+      </div>
+      <p class="lede">고객사별로 미리 준비해 둔 데모 묶음입니다. 발표 화면을 열어 그대로 시연합니다.</p>
+      <div class="toolbar-2">
+        <div class="meta" id="meta"></div>
+        <div class="quick">
+          <a class="btn ghost" href="/">카탈로그</a>
+          <a class="btn" href="/?pick=1">새 세트 만들기</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div id="error" class="banner error hidden"></div>
+      <div id="list" class="list"></div>
+      <div id="empty" class="empty hidden">
+        아직 만든 세트가 없습니다.<br />
+        카탈로그에서 <strong>데모 고르기</strong>로 시작하세요.
+      </div>
+    </main>
+  </div>
+
+  <dialog id="editDlg" class="dlg">
+    <form method="dialog" id="editForm">
+      <h2 id="editTitle">세트 편집</h2>
+      <label class="field">
+        <span>세트 이름</span>
+        <input id="edTitle" type="text" required />
+      </label>
+      <label class="field">
+        <span>부제 <em>(선택)</em></span>
+        <input id="edSubtitle" type="text" />
+      </label>
+      <label class="field">
+        <span>주소 <em>(/show/… 뒤에 붙는 부분)</em></span>
+        <input id="edSlug" type="text" />
+      </label>
+      <div class="field">
+        <span>데모 순서와 설명</span>
+        <div id="edItems" class="ed-items"></div>
+      </div>
+      <label class="field hidden" id="edKeyField">
+        <span>편집 비밀번호</span>
+        <input id="edKey" type="password" autocomplete="current-password" />
+      </label>
+      <p class="dlg-err hidden" id="edErr"></p>
+      <div class="dlg-actions">
+        <button type="button" class="btn ghost" id="edCancel">취소</button>
+        <button type="button" class="btn" id="edSave">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/sets/app.js"></script>
+</body>
+</html>

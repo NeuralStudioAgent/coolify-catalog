@@ -2,9 +2,11 @@
    Coolify Deploy Catalog
    - Main list: Coolify apps (excludes Next-Tomorrow / NT demos)
    - NT list: curated Next-Tomorrow Demo List (JP default / KR toggle)
+   - Demo sets: hand-picked line-ups to present at a customer meeting
    ============================================================ */
 
 const http = require("http");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const { Pool } = require("pg");
@@ -14,6 +16,12 @@ const PUBLIC = path.join(__dirname, "public");
 const EXTRAS_PATH = path.join(__dirname, "extras.json");
 const NT_APPS_PATH = path.join(__dirname, "nt-apps.json");
 const NT_HOST = (process.env.NT_HOST || "nt-demos.app.genver.online").toLowerCase();
+
+// Demo sets are the only mutable state here, so they live on a mounted volume
+// rather than in the image, which is rebuilt on every deploy.
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
+const SETS_PATH = path.join(DATA_DIR, "sets.json");
+const EDIT_KEY = process.env.EDIT_KEY || "";
 
 const pool = new Pool({
   host: process.env.DB_HOST || "coolify-db",
@@ -258,6 +266,119 @@ async function loadAll(force = false) {
   return cache;
 }
 
+/* ---------- Demo sets ---------------------------------------------------- */
+
+function readSets() {
+  const raw = loadJson(SETS_PATH, { sets: [] });
+  return Array.isArray(raw?.sets) ? raw.sets : [];
+}
+
+function writeSets(sets) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  const tmp = SETS_PATH + ".tmp";
+  fs.writeFileSync(tmp, JSON.stringify({ sets }, null, 2), "utf8");
+  fs.renameSync(tmp, SETS_PATH); // atomic, so a crash cannot truncate the file
+}
+
+function slugify(text) {
+  const base = String(text || "")
+    .toLowerCase()
+    .replace(/[^\w가-힣-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 48);
+  return base || "set-" + crypto.randomBytes(3).toString("hex");
+}
+
+function uniqueSlug(desired, sets, ignore = null) {
+  const taken = new Set(sets.filter((s) => s.slug !== ignore).map((s) => s.slug));
+  let slug = slugify(desired);
+  if (!taken.has(slug)) return slug;
+  for (let i = 2; i < 500; i++) {
+    if (!taken.has(`${slug}-${i}`)) return `${slug}-${i}`;
+  }
+  return `${slug}-${crypto.randomBytes(3).toString("hex")}`;
+}
+
+function cleanSet(body, existing = null) {
+  const items = (Array.isArray(body.items) ? body.items : [])
+    .map((it) => ({
+      // Both are kept: the id follows renames, the url survives an app being
+      // deleted from Coolify so a prepared line-up never goes blank mid-meeting.
+      id: String(it.id || "").slice(0, 120),
+      name: String(it.name || "").slice(0, 160),
+      url: String(it.url || "").slice(0, 400),
+      note: String(it.note || "").slice(0, 300),
+    }))
+    .filter((it) => it.url || it.id);
+
+  return {
+    slug: existing?.slug || "",
+    title: String(body.title || "").trim().slice(0, 120) || "제목 없는 세트",
+    subtitle: String(body.subtitle || "").trim().slice(0, 200),
+    items,
+    createdAt: existing?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+/** Merge a stored set with the live catalog so status and renames stay current. */
+function resolveSet(set, all) {
+  const byId = new Map(all.map((a) => [a.id, a]));
+  const byHost = new Map();
+  for (const app of all) {
+    for (const u of app.urls || []) byHost.set(hostOf(u), app);
+  }
+  const items = set.items.map((it) => {
+    const live = byId.get(it.id) || byHost.get(hostOf(it.url));
+    return {
+      id: it.id,
+      // The stored name wins: internal app names ("onpremise-promo") are not
+      // what a presenter wants on screen in front of a customer.
+      name: it.name || live?.name || it.url,
+      url: it.url || live?.urls?.[0] || "",
+      note: it.note,
+      description: live?.description || "",
+      status: live ? live.status : "unknown",
+      missing: !live,
+    };
+  });
+  return { ...set, items };
+}
+
+/** Editing is open unless EDIT_KEY is set, which locks it behind a shared password. */
+function authorized(req) {
+  if (!EDIT_KEY) return true;
+  const given = String(req.headers["x-edit-key"] || "");
+  const a = Buffer.from(given);
+  const b = Buffer.from(EDIT_KEY);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+function readBody(req, limit = 256 * 1024) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const chunks = [];
+    req.on("data", (c) => {
+      size += c.length;
+      if (size > limit) {
+        reject(new Error("본문이 너무 큽니다"));
+        req.destroy();
+        return;
+      }
+      chunks.push(c);
+    });
+    req.on("end", () => {
+      try {
+        resolve(chunks.length ? JSON.parse(Buffer.concat(chunks).toString("utf8")) : {});
+      } catch (e) {
+        reject(new Error("JSON 파싱 실패"));
+      }
+    });
+    req.on("error", reject);
+  });
+}
+
 function serveStatic(req, res, urlPath) {
   const file = path.normalize(path.join(PUBLIC, urlPath));
   if (!file.startsWith(PUBLIC)) return send(res, 403, "Forbidden", "text/plain");
@@ -298,7 +419,69 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === "GET" && urlPath === "/api/health") {
-    return send(res, 200, JSON.stringify({ ok: true }));
+    return send(res, 200, JSON.stringify({ ok: true, requiresKey: Boolean(EDIT_KEY) }));
+  }
+
+  if (urlPath === "/api/sets" || urlPath.startsWith("/api/sets/")) {
+    const slug = urlPath.startsWith("/api/sets/") ? urlPath.slice("/api/sets/".length) : "";
+
+    if (req.method === "GET" && !slug) {
+      const sets = readSets().map((s) => ({
+        slug: s.slug,
+        title: s.title,
+        subtitle: s.subtitle,
+        count: s.items.length,
+        updatedAt: s.updatedAt,
+      }));
+      return send(res, 200, JSON.stringify({ sets, requiresKey: Boolean(EDIT_KEY) }));
+    }
+
+    if (req.method === "GET" && slug) {
+      const set = readSets().find((s) => s.slug === slug);
+      if (!set) return send(res, 404, JSON.stringify({ error: "세트를 찾을 수 없습니다" }));
+      try {
+        const { all } = await loadAll(force);
+        return send(res, 200, JSON.stringify(resolveSet(set, all || [])));
+      } catch {
+        return send(res, 200, JSON.stringify(resolveSet(set, [])));
+      }
+    }
+
+    if (["POST", "PUT", "DELETE"].includes(req.method)) {
+      if (!authorized(req)) {
+        return send(res, 401, JSON.stringify({ error: "편집 비밀번호가 올바르지 않습니다" }));
+      }
+      try {
+        const sets = readSets();
+
+        if (req.method === "POST" && !slug) {
+          const body = await readBody(req);
+          const set = cleanSet(body);
+          set.slug = uniqueSlug(body.slug || body.title, sets);
+          sets.push(set);
+          writeSets(sets);
+          return send(res, 201, JSON.stringify(set));
+        }
+
+        const idx = sets.findIndex((s) => s.slug === slug);
+        if (idx < 0) return send(res, 404, JSON.stringify({ error: "세트를 찾을 수 없습니다" }));
+
+        if (req.method === "PUT") {
+          const body = await readBody(req);
+          const set = cleanSet(body, sets[idx]);
+          set.slug = body.slug ? uniqueSlug(body.slug, sets, slug) : sets[idx].slug;
+          sets[idx] = set;
+          writeSets(sets);
+          return send(res, 200, JSON.stringify(set));
+        }
+
+        sets.splice(idx, 1);
+        writeSets(sets);
+        return send(res, 200, JSON.stringify({ ok: true }));
+      } catch (e) {
+        return send(res, 400, JSON.stringify({ error: String(e.message || e) }));
+      }
+    }
   }
 
   if (req.method === "GET") {
@@ -307,6 +490,12 @@ const server = http.createServer(async (req, res) => {
       if (filePath === "/" || filePath === "/index.html") filePath = "/nt/index.html";
     } else if (filePath === "/") {
       filePath = "/index.html";
+    } else if (filePath === "/sets" || filePath === "/sets/") {
+      filePath = "/sets/index.html";
+    } else if (/^\/show\/[^/.]+\/?$/.test(filePath)) {
+      // The slug is read from the address bar by the page itself. Slugs never
+      // contain a dot, so /show/app.js still resolves to the real asset.
+      filePath = "/show/index.html";
     }
     return serveStatic(req, res, filePath);
   }

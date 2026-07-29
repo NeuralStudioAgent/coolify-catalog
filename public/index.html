@@ -30,7 +30,13 @@
         </select>
         <button id="refreshBtn" type="button" class="btn">새로고침</button>
       </div>
-      <div class="meta" id="meta"></div>
+      <div class="toolbar-2">
+        <div class="meta" id="meta"></div>
+        <div class="quick">
+          <a class="btn ghost" href="/sets">데모 세트</a>
+          <button id="pickBtn" type="button" class="btn ghost">데모 고르기</button>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -39,6 +45,45 @@
       <div id="empty" class="empty hidden">검색 결과가 없습니다.</div>
     </main>
   </div>
+
+  <!-- Selection tray: only visible while picking demos for a set. -->
+  <div id="tray" class="tray hidden">
+    <div class="tray-inner">
+      <span class="tray-count"><strong id="trayCount">0</strong>개 선택</span>
+      <span class="tray-names" id="trayNames"></span>
+      <button id="trayClear" type="button" class="btn ghost small">선택 해제</button>
+      <button id="traySave" type="button" class="btn small">세트로 저장</button>
+      <button id="trayExit" type="button" class="btn ghost small">닫기</button>
+    </div>
+  </div>
+
+  <dialog id="saveDlg" class="dlg">
+    <form method="dialog" id="saveForm">
+      <h2>데모 세트 저장</h2>
+      <label class="field">
+        <span>세트 이름</span>
+        <input id="setTitle" type="text" placeholder="예: 포스코홀딩스 7/30" required />
+      </label>
+      <label class="field">
+        <span>부제 <em>(선택)</em></span>
+        <input id="setSubtitle" type="text" placeholder="예: AI 문서 자동화 데모" />
+      </label>
+      <label class="field">
+        <span>주소 <em>(선택 · 비우면 이름에서 자동 생성)</em></span>
+        <input id="setSlug" type="text" placeholder="posco-0730" />
+      </label>
+      <label class="field hidden" id="setKeyField">
+        <span>편집 비밀번호</span>
+        <input id="setKey" type="password" autocomplete="current-password" />
+      </label>
+      <p class="dlg-err hidden" id="saveErr"></p>
+      <div class="dlg-actions">
+        <button type="button" class="btn ghost" id="saveCancel">취소</button>
+        <button type="button" class="btn" id="saveGo">저장</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="/app.js"></script>
 </body>
 </html>
