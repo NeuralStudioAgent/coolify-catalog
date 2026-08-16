@@ -3,8 +3,8 @@
     "key": "nti-demo",
     "kind": "mockup",
     "matchNames": ["nti-demo"],
-    "matchHosts": ["nti-demo.app.genver.online"],
-    "urls": ["https://nti-demo.app.genver.online"],
+    "matchHosts": ["nti-demo.app.next-tomorrow.online", "nti-demo.app.genver.online"],
+    "urls": ["https://nti-demo.app.next-tomorrow.online", "https://nti-demo.app.genver.online"],
     "title": {
       "jp": "NTI Demo",
       "kr": "NTI Demo"
@@ -18,8 +18,8 @@
     "key": "farm-support",
     "kind": "mockup",
     "matchNames": ["farm-support"],
-    "matchHosts": ["farm-support.app.teamver.online"],
-    "urls": ["https://farm-support.app.teamver.online"],
+    "matchHosts": ["farm-support.app.next-tomorrow.online", "farm-support.app.teamver.online"],
+    "urls": ["https://farm-support.app.next-tomorrow.online", "https://farm-support.app.teamver.online"],
     "title": {
       "jp": "Farm Support",
       "kr": "Farm Support"
@@ -33,8 +33,8 @@
     "key": "open-inno",
     "kind": "mockup",
     "matchNames": ["open-inno"],
-    "matchHosts": ["open-inno.app.teamver.online"],
-    "urls": ["https://open-inno.app.teamver.online"],
+    "matchHosts": ["open-inno.app.next-tomorrow.online", "open-inno.app.teamver.online"],
+    "urls": ["https://open-inno.app.next-tomorrow.online", "https://open-inno.app.teamver.online"],
     "title": {
       "jp": "Open Innovation",
       "kr": "Open Innovation"
@@ -48,8 +48,14 @@
     "key": "open-inno-catai",
     "kind": "mockup",
     "matchNames": ["open-inno-catai"],
-    "matchHosts": ["open-inno-catai.app.teamver.online"],
-    "urls": ["https://open-inno-catai.app.teamver.online"],
+    "matchHosts": [
+      "open-inno-catai.app.next-tomorrow.online",
+      "open-inno-catai.app.teamver.online"
+    ],
+    "urls": [
+      "https://open-inno-catai.app.next-tomorrow.online",
+      "https://open-inno-catai.app.teamver.online"
+    ],
     "title": {
       "jp": "Open Innovation × CAT.AI",
       "kr": "Open Innovation × CAT.AI"
@@ -63,8 +69,11 @@
     "key": "greenai-proto",
     "kind": "proto",
     "matchNames": ["greenai-proto / catai", "greenai-proto", "nt-greenai-catai"],
-    "matchHosts": ["greenai-proto.app.genver.online"],
-    "urls": ["https://greenai-proto.app.genver.online"],
+    "matchHosts": ["greenai-proto.app.next-tomorrow.online", "greenai-proto.app.genver.online"],
+    "urls": [
+      "https://greenai-proto.app.next-tomorrow.online",
+      "https://greenai-proto.app.genver.online"
+    ],
     "title": {
       "jp": "Green AI Proto (CAT.AI)",
       "kr": "Green AI Proto (CAT.AI)"
@@ -93,8 +102,8 @@
     "key": "pmnt",
     "kind": null,
     "matchNames": ["pmnt"],
-    "matchHosts": ["pmnt.app.genver.online"],
-    "urls": ["https://pmnt.app.genver.online"],
+    "matchHosts": ["pmnt.app.next-tomorrow.online", "pmnt.app.genver.online"],
+    "urls": ["https://pmnt.app.next-tomorrow.online", "https://pmnt.app.genver.online"],
     "title": {
       "jp": "Project Management",
       "kr": "프로젝트 관리"
@@ -102,6 +111,22 @@
     "description": {
       "jp": "プロジェクト管理ボード（タスク / アーカイブ）",
       "kr": "프로젝트 관리 보드 (태스크 / 아카이브)"
+    }
+  },
+  {
+    "key": "rag-exp",
+    "listed": false,
+    "kind": null,
+    "matchNames": ["rag-exp"],
+    "matchHosts": ["rag-exp.app.next-tomorrow.online"],
+    "urls": ["https://rag-exp.app.next-tomorrow.online"],
+    "title": {
+      "jp": "RAG 技術資料",
+      "kr": "RAG 기술 자료"
+    },
+    "description": {
+      "jp": "特定の宛先にのみ送付する非公開資料。一覧には掲載しない",
+      "kr": "특정 수신자에게만 발송하는 비공개 자료. 목록에는 노출하지 않는다"
     }
   }
 ]

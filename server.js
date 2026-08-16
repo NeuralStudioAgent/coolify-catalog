@@ -83,6 +83,20 @@ function hostOf(url) {
   }
 }
 
+/** Everything under the company domain is NT business (policy §2-1). */
+function isNtDomain(host) {
+  return host === "next-tomorrow.online" || host.endsWith(".next-tomorrow.online");
+}
+
+/* The NT list is what a customer looks at, so it advertises the company domain
+   only. Older genver/teamver hosts keep serving the same app — they are just
+   not shown here. An app with no NT address yet falls back to what it has, so
+   a missing domain never turns into a card with no link. */
+function ntPublicUrls(urls) {
+  const own = (urls || []).filter((u) => isNtDomain(hostOf(u)));
+  return own.length ? own : urls || [];
+}
+
 function normalizeStatus(s) {
   const v = String(s || "").toLowerCase();
   if (v.includes("running") && v.includes("healthy")) return "healthy";
@@ -253,14 +267,18 @@ async function loadAll(force = false) {
     }
   }
 
-  const ntApps = ntDefs.map((def) => {
+  /* "listed": false 인 정의는 어느 목록에도 싣지 않는다.
+     특정 수신자에게만 보내는 비공개 자료를 NT 도메인에 배포하면서도
+     NT 목록과 일반 목록 양쪽에서 감추기 위한 예외 처리다.
+     (정의 자체는 남겨야 isNtApp 매칭으로 일반 목록 유출을 막을 수 있다) */
+  const ntApps = ntDefs.filter((def) => def.listed !== false).map((def) => {
     const live = liveByKey.get(def.key)?.app;
     return {
       key: def.key,
       kind: def.kind || null, // mockup | proto | null
       title: def.title || { jp: def.key, kr: def.key },
       description: def.description || { jp: "", kr: "" },
-      urls: (live?.urls?.length ? live.urls : def.urls) || [],
+      urls: ntPublicUrls((live?.urls?.length ? live.urls : def.urls) || []),
       status: live ? live.status : "unknown",
       git: live?.git || null,
       branch: live?.branch || null,
@@ -417,11 +435,7 @@ function isNtHost(req) {
     .toLowerCase();
   // Everything under next-tomorrow.online is NT business by policy, so the list
   // answers there even on a host nobody remembered to add to NT_HOSTS.
-  return (
-    NT_HOSTS.has(host) ||
-    host === "next-tomorrow.online" ||
-    host.endsWith(".next-tomorrow.online")
-  );
+  return NT_HOSTS.has(host) || isNtDomain(host);
 }
 
 const server = http.createServer(async (req, res) => {

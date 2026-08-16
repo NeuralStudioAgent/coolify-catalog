@@ -42,17 +42,44 @@ NT 목록은 NT 회사 사업이므로 **회사 도메인(`next-tomorrow.online`
 
 설정 파일: [`nt-apps.json`](../nt-apps.json)
 
-| key | 구분 (`kind`) | URL (대표) |
-|-----|----------------|------------|
-| `nti-demo` | mockup | https://nti-demo.app.genver.online |
-| `farm-support` | mockup | https://farm-support.app.teamver.online |
-| `open-inno` | mockup | https://open-inno.app.teamver.online |
-| `open-inno-catai` | mockup | https://open-inno-catai.app.teamver.online |
-| `greenai-proto` | **proto** | https://greenai-proto.app.genver.online |
-| `greenai-rag` | **proto** | https://rag.demo.next-tomorrow.online |
-| `pmnt` | *(없음 — 도구)* | https://pmnt.app.genver.online |
+| key | 구분 (`kind`) | URL (대표 — 목록 노출) | 구 URL (계속 동작, 목록 비노출) |
+|-----|----------------|------------------------|----------------------------------|
+| `nti-demo` | mockup | https://nti-demo.app.next-tomorrow.online | https://nti-demo.app.genver.online |
+| `farm-support` | mockup | https://farm-support.app.next-tomorrow.online | https://farm-support.app.teamver.online |
+| `open-inno` | mockup | https://open-inno.app.next-tomorrow.online | https://open-inno.app.teamver.online |
+| `open-inno-catai` | mockup | https://open-inno-catai.app.next-tomorrow.online | https://open-inno-catai.app.teamver.online |
+| `greenai-proto` | **proto** | https://greenai-proto.app.next-tomorrow.online | https://greenai-proto.app.genver.online |
+| `greenai-rag` | **proto** | https://rag.demo.next-tomorrow.online | *(없음)* |
+| `pmnt` | *(없음 — 도구)* | https://pmnt.app.next-tomorrow.online | https://pmnt.app.genver.online |
+| `rag-exp` | *(없음 — `listed: false`)* | https://rag-exp.app.next-tomorrow.online | *(없음)* |
 
 목록이 바뀌면 **반드시 `nt-apps.json`과 이 표를 함께 갱신**한다.
+
+### 3.2 목록 비노출 예외 (`listed: false`)
+
+특정 수신자에게만 보내는 비공개 자료는 **두 목록 어디에도 싣지 않는다.**
+
+`nt-apps.json` 항목에 `"listed": false` 를 넣으면 NT 목록에서 제외된다.
+정의 자체는 **반드시 남겨야** 한다 — `isNtApp` 매칭이 있어야 일반 목록으로 새어 나가지 않는다.
+정의를 아예 빼면 Coolify DB 조회로 **일반 목록에 그대로 노출된다.**
+
+| 설정 | 일반 목록 | NT 목록 |
+|---|---|---|
+| 정의 없음 | **노출됨** ← 유출 | 없음 |
+| 정의 있음 (기본) | 제외 | 노출 |
+| 정의 있음 + `listed: false` | 제외 | 제외 |
+
+현재 대상: `rag-exp` (일본 고객 발송용 RAG 기술자료 3종).
+
+### 3.1 주소 규칙
+
+- NT 앱의 대표 주소는 **`<앱>.app.next-tomorrow.online`** 이다.
+- 구 주소(genver / teamver)는 **리다이렉트하지 않고 그대로 서비스한다.** 기존 링크·자료가
+  깨지지 않게 하려는 것이고, 리다이렉트로 처리하면 주소창에 타사 도메인이 드러나
+  회사 도메인으로 옮긴 의미가 없어진다.
+- **목록에는 `next-tomorrow.online` 주소만 노출된다** (`server.js`의 `ntPublicUrls`).
+  구 주소는 카탈로그에 표시되지 않을 뿐, 접속은 계속 된다.
+- NT 주소가 아직 없는 항목은 예외적으로 가진 주소를 그대로 보여준다 (링크 없는 카드 방지).
 
 ---
 
@@ -79,8 +106,14 @@ NT 목록에서는 데모 성격을 구분해서 표시한다.
 ### 5.1 NT 앱인 경우
 
 1. Coolify(또는 수동 배포)로 배포한다.
-2. [`nt-apps.json`](../nt-apps.json)에 항목을 추가한다.
-   - `key`, `matchNames`, `matchHosts`, `urls`
+2. 대표 주소 `<앱>.app.next-tomorrow.online` 를 붙인다.
+   - Porkbun에 A 레코드 추가 (→ `72.62.240.155`). `*.next-tomorrow.online` 와일드카드는
+     파킹으로 잡혀 있으므로 **서브도메인마다 개별 레코드가 필요**하다.
+   - Coolify 앱: `domains` 에 기존 주소와 함께 콤마로 넣고 restart (라벨이 재생성된다).
+   - 수동 배포: compose 라벨 rule을 `Host(구) || Host(신)` 으로 확장 후 `up -d`.
+3. [`nt-apps.json`](../nt-apps.json)에 항목을 추가한다.
+   - `key`, `matchNames`, `matchHosts`, `urls` — **`matchHosts`·`urls` 에 신·구 주소를 모두** 넣는다
+     (구 주소로 배포된 앱이 일반 목록으로 새어 나가지 않게 한다)
    - `title` / `description` — **jp · kr 둘 다**
    - `kind`: `"mockup"` | `"proto"` | `null`
 3. 일반 목록용 [`extras.json`](../extras.json)에는 **넣지 않는다** (중복·유출 방지).
@@ -110,6 +143,7 @@ NT 목록에서는 데모 성격을 구분해서 표시한다.
 | `nt-apps.json` | NT 전용 정의 (매칭·i18n·kind) |
 | `extras.json` | 일반 목록용 수동 항목 (+ NT 목록 링크) |
 | `server.js` | Coolify DB 조회, NT 필터, `/api/apps` · `/api/nt-apps` |
+| — `ntPublicUrls` | NT 목록에 회사 도메인 주소만 노출 (구 주소는 숨김, 서비스는 유지) |
 | — `NT_HOSTS` | NT UI를 서비스할 호스트(쉼표 구분). `*.next-tomorrow.online` 은 설정 없이도 NT로 취급 |
 | `public/` | 일반 카탈로그 UI |
 | `public/nt/` | NT Demo List UI (JP/KR) |
@@ -148,3 +182,4 @@ NT 목록에서는 데모 성격을 구분해서 표시한다.
 | 2026-07-29 | 일반 카탈로그 도메인을 `demo.app.genver.online`으로 이전 (구 주소는 301) |
 | 2026-07-29 | NT 목록을 회사 도메인 `demo.app.next-tomorrow.online` 으로 이전 (`nt-demos.app` → 301). `next-tomorrow.online` 배포는 전부 NT로 분류 (§2-1). `greenai-rag` 등록 |
 | 2026-07-29 | 데모 세트 기능 추가. NT 데모는 세트에 담지 않는다 (§1 분리 원칙 유지) |
+| 2026-08-03 | NT 데모 6종에 `<앱>.app.next-tomorrow.online` 주소 부여. 구 주소는 그대로 서비스하되 목록에서는 회사 도메인만 노출 (§3.1). `greenai-proto` 를 `/opt/nt-greenai-catai` compose 관리로 전환 |
