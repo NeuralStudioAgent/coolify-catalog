@@ -115,7 +115,6 @@
   },
   {
     "key": "idex-catai",
-    "listed": false,
     "kind": "proto",
     "matchNames": ["idex-catai"],
     "matchHosts": ["idex-catai.proto.next-tomorrow.online"],
@@ -125,13 +124,12 @@
       "kr": "이데쿠스덴키 FAQ (CAT.AI 버전)"
     },
     "description": {
-      "jp": "顧客提案用の非公開PoC。CAT.AI XI Agent + DocStore。一覧には掲載しない",
-      "kr": "고객 제안용 비공개 PoC. CAT.AI XI Agent + DocStore. 목록에는 노출하지 않는다"
+      "jp": "CAT.AI の XI Agent + DocStore で構築。公開FAQ 44件を出典付きで回答する",
+      "kr": "CAT.AI XI Agent + DocStore로 구축. 공개 FAQ 44건을 출처와 함께 답변"
     }
   },
   {
     "key": "idex-nt",
-    "listed": false,
     "kind": "proto",
     "matchNames": ["idex-nt"],
     "matchHosts": ["idex-nt.proto.next-tomorrow.online"],
@@ -141,8 +139,8 @@
       "kr": "이데쿠스덴키 FAQ (자체 구축 RAG)"
     },
     "description": {
-      "jp": "顧客提案用の非公開PoC。自社RAG＋図表出力。一覧には掲載しない",
-      "kr": "고객 제안용 비공개 PoC. 자체 RAG + 도표 출력. 목록에는 노출하지 않는다"
+      "jp": "CAT.AI非依存の自社RAG。BM25+ベクトル検索、連絡先・手続き・グラフを図として出力",
+      "kr": "CAT.AI 비의존 자체 RAG. BM25+벡터 검색, 연락처·절차·그래프를 도표로 출력"
     }
   },
   {
