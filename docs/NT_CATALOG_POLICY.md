@@ -52,6 +52,8 @@ NT 목록은 NT 회사 사업이므로 **회사 도메인(`next-tomorrow.online`
 | `greenai-rag` | **proto** | https://rag.demo.next-tomorrow.online | *(없음)* |
 | `pmnt` | *(없음 — 도구)* | https://pmnt.app.next-tomorrow.online | https://pmnt.app.genver.online |
 | `rag-exp` | *(없음 — `listed: false`)* | https://rag-exp.app.next-tomorrow.online | *(없음)* |
+| `idex-catai` | **proto** (`listed: false`) | https://idex-catai.proto.next-tomorrow.online | *(없음)* |
+| `idex-nt` | **proto** (`listed: false`) | https://idex-nt.proto.next-tomorrow.online | *(없음)* |
 
 목록이 바뀌면 **반드시 `nt-apps.json`과 이 표를 함께 갱신**한다.
 
@@ -69,7 +71,10 @@ NT 목록은 NT 회사 사업이므로 **회사 도메인(`next-tomorrow.online`
 | 정의 있음 (기본) | 제외 | 노출 |
 | 정의 있음 + `listed: false` | 제외 | 제외 |
 
-현재 대상: `rag-exp` (일본 고객 발송용 RAG 기술자료 3종).
+현재 대상:
+
+- `rag-exp` (일본 고객 발송용 RAG 기술자료 3종)
+- `idex-catai` / `idex-nt` (이데쿠스덴키 제안용 PoC 2종 — 특정 고객 대상이라 목록 비노출)
 
 ### 3.1 주소 규칙
 
@@ -183,3 +188,4 @@ NT 목록에서는 데모 성격을 구분해서 표시한다.
 | 2026-07-29 | NT 목록을 회사 도메인 `demo.app.next-tomorrow.online` 으로 이전 (`nt-demos.app` → 301). `next-tomorrow.online` 배포는 전부 NT로 분류 (§2-1). `greenai-rag` 등록 |
 | 2026-07-29 | 데모 세트 기능 추가. NT 데모는 세트에 담지 않는다 (§1 분리 원칙 유지) |
 | 2026-08-03 | NT 데모 6종에 `<앱>.app.next-tomorrow.online` 주소 부여. 구 주소는 그대로 서비스하되 목록에서는 회사 도메인만 노출 (§3.1). `greenai-proto` 를 `/opt/nt-greenai-catai` compose 관리로 전환 |
+| 2026-08-19 | 이데쿠스덴키 PoC 2종(`idex-catai`, `idex-nt`) 등록. 고객 제안용이라 `listed: false`. 주소는 `<앱>.proto.next-tomorrow.online` — 고객 PoC용으로 `app.` 대신 `proto.` 계층 사용 |

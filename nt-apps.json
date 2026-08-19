@@ -114,6 +114,38 @@
     }
   },
   {
+    "key": "idex-catai",
+    "listed": false,
+    "kind": "proto",
+    "matchNames": ["idex-catai"],
+    "matchHosts": ["idex-catai.proto.next-tomorrow.online"],
+    "urls": ["https://idex-catai.proto.next-tomorrow.online"],
+    "title": {
+      "jp": "イデックスでんき FAQ (CAT.AI版)",
+      "kr": "이데쿠스덴키 FAQ (CAT.AI 버전)"
+    },
+    "description": {
+      "jp": "顧客提案用の非公開PoC。CAT.AI XI Agent + DocStore。一覧には掲載しない",
+      "kr": "고객 제안용 비공개 PoC. CAT.AI XI Agent + DocStore. 목록에는 노출하지 않는다"
+    }
+  },
+  {
+    "key": "idex-nt",
+    "listed": false,
+    "kind": "proto",
+    "matchNames": ["idex-nt"],
+    "matchHosts": ["idex-nt.proto.next-tomorrow.online"],
+    "urls": ["https://idex-nt.proto.next-tomorrow.online"],
+    "title": {
+      "jp": "イデックスでんき FAQ (自社構築RAG)",
+      "kr": "이데쿠스덴키 FAQ (자체 구축 RAG)"
+    },
+    "description": {
+      "jp": "顧客提案用の非公開PoC。自社RAG＋図表出力。一覧には掲載しない",
+      "kr": "고객 제안용 비공개 PoC. 자체 RAG + 도표 출력. 목록에는 노출하지 않는다"
+    }
+  },
+  {
     "key": "rag-exp",
     "listed": false,
     "kind": null,
